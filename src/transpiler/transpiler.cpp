@@ -71,6 +71,7 @@ void Transpiler::VisitProgram(const Program& node) {
 }
 
 void Transpiler::VisitBlockStatement(const BlockStatement& node) {
+    tabs();
     *m_Output += "{\n";
     m_Deapth++;
 
@@ -79,6 +80,7 @@ void Transpiler::VisitBlockStatement(const BlockStatement& node) {
     }
 
     m_Deapth--;
+    tabs();
     *m_Output += "}\n";
 }
 
