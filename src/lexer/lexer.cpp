@@ -55,6 +55,11 @@ namespace {
             }
         }
 
+        if (!ctx.IsEnd() && ctx.Peek() == 'f') {
+            kind = TokenKind::FLOAT;
+            ctx.Advance();
+        }
+
         ctx.PushToken(kind, text);
     }
 }
