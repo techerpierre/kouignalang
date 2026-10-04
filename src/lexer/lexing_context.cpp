@@ -11,7 +11,7 @@ LexingContext::LexingContext(const std::string& source)
     m_Tokens(std::make_unique<std::vector<Token>>()) {}
 
 bool LexingContext::IsEnd(void) const {
-    return m_Cursor >= m_Source.size();
+    return m_Cursor >= m_Source.size() || m_Source[m_Cursor] == '\0';
 }
 
 char LexingContext::Peek(size_t offset) const {

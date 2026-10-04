@@ -59,6 +59,8 @@ namespace {
     }
 }
 
+#include <iostream>
+
 std::unique_ptr<std::vector<Token>> lexer::lex(const std::string& source) {
     LexingContext ctx(source);
 

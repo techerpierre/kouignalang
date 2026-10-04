@@ -1,19 +1,15 @@
-#include <iostream>
-#include <string>
-#include "interpreter/interpreter.hpp"
+#include "utils/args.hpp"
+#include "commands/commands.hpp"
 
-int main(void) {
-    std::string code;
-    std::cout << "> "; 
+int main(int argc, char* argv[]) {
+    auto args = arg::parseArgs(argc, argv);
 
-    while (std::getline(std::cin, code)) {
-        if (code.empty()) {
-            std::cout << "> "; 
-            continue;
-        }
-        interpreter::interpret(code);
-        std::cout << "> "; 
+    if (args->inputFile != nullptr) {
+        cmd::transpile(*args);
+        return 0;
     }
+
+    cmd::console(*args);
 
     return 0;
 }
