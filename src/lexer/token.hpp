@@ -18,6 +18,11 @@ enum class TokenKind {
     CLOSE_PAR, // )
     OPEN_BRACE, // {
     CLOSE_BRACE, // }
+    OPEN_BRACKET, // [
+    CLOSE_BRACKET, // ]
+    ASSIGN, // =
+    ID, // x, y, myVariable ...
+    VAR, // var
     END_OF_FILE // EOF
 };
 

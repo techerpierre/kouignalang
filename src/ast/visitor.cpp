@@ -15,6 +15,21 @@ void Visitor::Dispatch(const Node& node) {
         VisitFloatLiteral(floatLit);
         break;
     }
+    case NodeKind::IDENTIFIER_LITERAL: {
+        const auto& idLit = static_cast<const IdentifierLiteral&>(node);
+        VisitIdentifierLiteral(idLit);
+        break;
+    }
+    case NodeKind::SIMPLE_TYPE: {
+        const auto& simType = static_cast<const SimpleType&>(node);
+        VisitSimpleType(simType);
+        break;
+    }
+    case NodeKind::ARRAY_TYPE: {
+        const auto& arrType = static_cast<const ArrayType&>(node);
+        VisitArrayType(arrType);
+        break;
+    }
     case NodeKind::BINARY_EXPRESSION: {
         const auto& binaryExpr = static_cast<const BinaryExpresion&>(node);
         VisitBinaryExpresion(binaryExpr);
@@ -35,9 +50,15 @@ void Visitor::Dispatch(const Node& node) {
         VisitProgram(prog);
         break;
     }
-    case NodeKind::BLOCK_STATEMENT:
+    case NodeKind::BLOCK_STATEMENT: {
         const auto& blockStmt = static_cast<const BlockStatement&>(node);
         VisitBlockStatement(blockStmt);
         break;
+    }
+    case NodeKind::VARIABLE_DECLARATION_STATEMENT: {
+        const auto& varDecStmt = static_cast<const VariableDeclarationStatement&>(node);
+        VisitVariableDeclarationStatement(varDecStmt);
+        break;
+    }
     }
 }

@@ -6,6 +6,8 @@ std::string Error::getTypeStr(void) const {
     switch (m_Type) {
         case ErrorType::PARSING: return "Parsing Error";
         case ErrorType::RUNTIME: return "Runtime Error";
+        case ErrorType::TRANSPILE: return "Transpile Error";
+        case ErrorType::SEMANTIC: return "Semantic Error";
         default: return "Unknown Error";
     }
 }

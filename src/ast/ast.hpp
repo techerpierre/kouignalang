@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <memory>
+#include <string>
 #include "../core/position.hpp"
 
 namespace ast {
@@ -10,11 +11,20 @@ namespace ast {
 enum class NodeKind {
     INT_LITERAL,
     FLOAT_LITERAL,
+    IDENTIFIER_LITERAL,
+
+    SIMPLE_TYPE,
+    ARRAY_TYPE,
+
     BINARY_EXPRESSION,
     UNARY_EXPRESSION,
+
     EXPRESSION_STATEMENT,
     BLOCK_STATEMENT,
+    VARIABLE_DECLARATION_STATEMENT,
+
     PROGRAM,
+
     UNKNOWN,
 };
 
@@ -28,6 +38,11 @@ public:
 class Expression : public Node {
 public:
     Expression(NodeKind kind = NodeKind::UNKNOWN) : Node(kind) {}
+};
+
+class Type : public Node {
+public:
+    Type(NodeKind kind = NodeKind::UNKNOWN) : Node(kind) {}
 };
 
 class Statement : public Node {
@@ -51,6 +66,24 @@ class FloatLiteral : public Expression {
 public:
     double value;
     FloatLiteral() : Expression(NodeKind::FLOAT_LITERAL) {}
+};
+
+class IdentifierLiteral : public Expression {
+public:
+    std::string name;
+    IdentifierLiteral() : Expression(NodeKind::IDENTIFIER_LITERAL) {}
+};
+
+class SimpleType : public Type {
+public:
+    std::string name;
+    SimpleType() : Type(NodeKind::SIMPLE_TYPE) {}
+};
+
+class ArrayType : public Type {
+public:
+    std::unique_ptr<Type> elementType;
+    ArrayType() : Type(NodeKind::ARRAY_TYPE) {}
 };
 
 enum class BinaryExpOperator {
@@ -91,6 +124,14 @@ class BlockStatement : public Statement {
 public:
     std::vector<std::unique_ptr<Statement>> body;
     BlockStatement() : Statement(NodeKind::BLOCK_STATEMENT) {}
+};
+
+class VariableDeclarationStatement : public Statement {
+public:
+    std::string name;
+    std::unique_ptr<Type> type;
+    std::unique_ptr<Expression> defaultValue; // Can be nullptr
+    VariableDeclarationStatement() : Statement(NodeKind::VARIABLE_DECLARATION_STATEMENT) {}
 };
 
 }

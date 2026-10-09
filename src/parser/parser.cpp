@@ -7,16 +7,22 @@ using namespace parser;
 namespace {
     std::unique_ptr<Statement> parseStatement(ParsingContext& ctx);
     std::unique_ptr<Statement> parseBlockStatement(ParsingContext& ctx);
+    std::unique_ptr<Statement> parseVariableDeclarationStatement(ParsingContext& ctx);
     std::unique_ptr<Expression> parseExpression(ParsingContext& ctx);
     std::unique_ptr<Expression> parseTermExpression(ParsingContext& ctx);
     std::unique_ptr<Expression> parseFactorExpression(ParsingContext& ctx);
     std::unique_ptr<Expression> parsePowerExpression(ParsingContext& ctx);
     std::unique_ptr<Expression> parseUnaryExpression(ParsingContext& ctx);
     std::unique_ptr<Expression> parseLiteralExpression(ParsingContext& ctx);
+    std::unique_ptr<Type> parseType(ParsingContext& ctx);
 
     std::unique_ptr<Statement> parseStatement(ParsingContext& ctx) {
-        if (ctx.Eat({ TokenKind::OPEN_BRACE })) {
+        if (ctx.Eat({TokenKind::OPEN_BRACE})) {
             return parseBlockStatement(ctx);
+        }
+
+        if (ctx.Eat({TokenKind::VAR})) {
+            return parseVariableDeclarationStatement(ctx);
         }
 
         auto st = std::make_unique<ExpressionStatement>();
@@ -36,6 +42,21 @@ namespace {
         ctx.EatOrFail({TokenKind::CLOSE_BRACE}, "Undelimited code block. Missing '{'.");
 
         return block;
+    }
+
+    std::unique_ptr<Statement> parseVariableDeclarationStatement(ParsingContext& ctx) {
+        auto varKeyword = ctx.Previous();
+        auto name = ctx.EatOrFail({TokenKind::ID}, "Missing variable name.");
+        auto variable = std::make_unique<VariableDeclarationStatement>();
+        variable->name = name.text;
+        variable->type = parseType(ctx);
+        variable->position = varKeyword.pos;
+
+        if (ctx.Eat({TokenKind::ASSIGN})) {
+            variable->defaultValue = parseExpression(ctx);
+        }
+
+        return variable;
     }
 
     std::unique_ptr<Expression> parseExpression(ParsingContext& ctx) {
@@ -125,6 +146,13 @@ namespace {
             return expr;
         }
 
+        if (ctx.Eat({TokenKind::ID})) {
+            auto expr = std::make_unique<IdentifierLiteral>();
+            expr->name = token.text;
+            expr->position = token.pos;
+            return expr;
+        }
+
         if (ctx.Eat({TokenKind::OPEN_PAR})) {
             auto expr = parseExpression(ctx);
             auto closePar = ctx.EatOrFail({TokenKind::CLOSE_PAR}, ") is expected to close parenthesis.");
@@ -132,6 +160,23 @@ namespace {
         }
 
         throw error::ParsingError(std::string("Unexpected token: ") + token.text, token.pos);
+    }
+
+    std::unique_ptr<Type> parseType(ParsingContext& ctx) {
+        auto typeName = ctx.EatOrFail({TokenKind::ID}, "Missing type name.");
+        auto type = std::make_unique<SimpleType>();
+        type->name = typeName.text;
+        type->position = typeName.pos;
+
+        if (ctx.Eat({TokenKind::OPEN_BRACKET})) {
+            ctx.EatOrFail({TokenKind::CLOSE_BRACKET}, "] is expected to close array type declaration.");
+            auto arrayType = std::make_unique<ArrayType>();
+            arrayType->elementType = std::move(type);
+            arrayType->position = arrayType->elementType->position;
+            return arrayType;
+        }
+
+        return type;
     }
 }
 

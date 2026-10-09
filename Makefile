@@ -6,6 +6,7 @@ SOURCE = src/*.cpp \
 	src/ast/*.cpp \
 	src/parser/*.cpp \
 	src/interpreter/*.cpp \
+	src/sema/*.cpp \
 	src/transpiler/*.cpp \
 	src/commands/*.cpp \
 	src/utils/*.cpp
@@ -35,3 +36,6 @@ run-in:
 
 run-inout:
 	./$(TARGET) -i $(IN_DEV_FILE) -o $(OUT_DEV_FILE)
+
+run-ast:
+	./$(TARGET) -i $(IN_DEV_FILE) -p

@@ -1,7 +1,8 @@
 #include "lexer.hpp"
+#include "lexing_context.hpp"
 #include <cctype>
 #include "../core/error.hpp"
-#include "lexing_context.hpp"
+#include "../utils/utils.hpp"
 
 using namespace lexer;
 
@@ -10,6 +11,7 @@ namespace {
     template<typename T>
     bool scanRules(LexingContext& ctx, const std::vector<std::pair<std::string, T>>& rules);
     void scanNumber(LexingContext& ctx);
+    void scanIdentifier(LexingContext& ctx);
 
     void scanToken(LexingContext& ctx) {
         if (isspace(ctx.Peek())) {
@@ -21,6 +23,11 @@ namespace {
 
         if (std::isdigit(ctx.Peek())) {
             scanNumber(ctx);
+            return;
+        }
+
+        if (isAlpha(ctx.Peek())) {
+            scanIdentifier(ctx);
             return;
         }
 
@@ -58,6 +65,24 @@ namespace {
         if (!ctx.IsEnd() && ctx.Peek() == 'f') {
             kind = TokenKind::FLOAT;
             ctx.Advance();
+        }
+
+        ctx.PushToken(kind, text);
+    }
+
+    void scanIdentifier(LexingContext& ctx) {
+        std::string text = "";
+        TokenKind kind = TokenKind::ID;
+
+        while (!ctx.IsEnd() && isAlnum(ctx.Peek())) {
+            text += ctx.Peek();
+            ctx.Advance();
+        }
+
+        auto reserved = ReservedIdentifiers.find(text);
+
+        if (reserved != ReservedIdentifiers.end()) {
+            kind = reserved->second;
         }
 
         ctx.PushToken(kind, text);

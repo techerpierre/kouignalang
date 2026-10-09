@@ -16,7 +16,10 @@ int cmd::transpile(const arg::Args& args) {
     auto code = std::string(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
     in.close();
 
-    auto outCode = transpiler::transpile(code);
+    transpiler::TranspileOptions tranpilerOpt;
+    tranpilerOpt.isPrintAst = args.isPrintAst;
+
+    auto outCode = transpiler::transpile(code, tranpilerOpt);
 
     if (outCode == nullptr) {
         return 1;

@@ -5,12 +5,16 @@
 using namespace ast;
 
 namespace {
-    std::string tabs(size_t depth) {
-        return std::string(depth*4, ' ');
-    }
-
     std::string withColor(AstColor color, const std::string& str) {
         return AstAnsiiColorsMap.find(color)->second + str + RESET_COLOR;
+    }
+
+    std::string tabs(size_t depth) {
+        std::string text = "";
+        for (size_t i = depth; i > 0; i--) {
+            text += withColor(AstColor::BLACK, i == 1 ? "|---" : "|   ");
+        }
+        return text;
     }
 
     AstColor colorizeByDepth(
@@ -47,6 +51,14 @@ namespace {
     std::string expression(const std::string& name) {
         return withColor(AstColor::CYAN, name);
     }
+
+    std::string key(const std::string& text) {
+        return withColor(AstColor::CYAN, text);
+    }
+
+    std::string symbol(const std::string& text) {
+        return withColor(AstColor::PURPLE, text);
+    }
 }
 
 void AstPrinter::VisitIntLiteral(const IntLiteral& node) {
@@ -55,6 +67,19 @@ void AstPrinter::VisitIntLiteral(const IntLiteral& node) {
 
 void AstPrinter::VisitFloatLiteral(const FloatLiteral& node) {
     std::cout << tabs(m_Depth) << expression("FloatLiteral") << parenthesis(m_Depth) << node.value << parenthesis(m_Depth, 1) << "\n";
+}
+
+void AstPrinter::VisitIdentifierLiteral(const IdentifierLiteral& node) {
+    std::cout << tabs(m_Depth) << expression("IdentifierLiteral") << parenthesis(m_Depth) << node.name << parenthesis(m_Depth, 1) << "\n";
+}
+
+void AstPrinter::VisitSimpleType(const SimpleType& node) {
+    std::cout << node.name;
+}
+
+void AstPrinter::VisitArrayType(const ArrayType& node) {
+    Dispatch(*node.elementType);
+    std::cout << "[]";
 }
 
 void AstPrinter::VisitBinaryExpresion(const BinaryExpresion& node) {
@@ -102,6 +127,28 @@ void AstPrinter::VisitBlockStatement(const BlockStatement& node) {
     }
     m_Depth--;
     std::cout << tabs(m_Depth) << brace(m_Depth, 1);
+}
+
+void AstPrinter::VisitVariableDeclarationStatement(const VariableDeclarationStatement& node) {
+    std::cout << tabs(m_Depth)
+        << statement("VariableDeclarationStatement")
+        << parenthesis(m_Depth)
+        << key("name") << symbol("=") << node.name
+        << " "
+        << key("type") << symbol("=");
+    Dispatch(*node.type);
+    std::cout << parenthesis(m_Depth, 1);
+
+    if (node.defaultValue != nullptr) {
+        std::cout << brace(m_Depth);
+        m_Depth++;
+        Dispatch(*node.defaultValue);
+        m_Depth--;
+        std::cout << tabs(m_Depth) << brace(m_Depth, 1);
+        return;
+    }
+
+    std::cout << "\n";
 }
 
 void ast::print(const Node& node) {

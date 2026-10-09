@@ -15,6 +15,11 @@ std::unique_ptr<Args> arg::parseArgs(int argc, char* argv[]) {
             continue;
         }
 
+        if (arg == "--print-ast" || arg == "-p") {
+            args->isPrintAst = true;
+            continue;
+        }
+
         if ((arg.rfind("--", 0) == 0 || arg.rfind("-", 0) == 0) && i + 1 >= argc) {
             continue;
         }

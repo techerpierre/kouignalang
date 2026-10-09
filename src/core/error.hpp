@@ -8,7 +8,9 @@ namespace error {
 
 enum class ErrorType {
     PARSING,
-    RUNTIME
+    RUNTIME,
+    TRANSPILE,
+    SEMANTIC
 };
 
 class Error {
@@ -34,6 +36,19 @@ public:
     RuntimeError(const std::string& message, const Position& position)
         : Error(ErrorType::RUNTIME, message, position) {}
 };
+
+class TranspileError : public Error {
+public:
+    TranspileError(const std::string& message, const Position& position)
+        : Error(ErrorType::TRANSPILE, message, position) {}
+};
+
+class SemanticError : public Error {
+public:
+    SemanticError(const std::string& message, const Position& position)
+        : Error(ErrorType::SEMANTIC, message, position) {}
+};
+
 
 }
 

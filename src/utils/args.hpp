@@ -9,6 +9,7 @@ namespace arg {
 struct Args {
     std::unique_ptr<std::string> inputFile;
     std::unique_ptr<std::string> outputFile;
+    bool isPrintAst;
     bool isHelp;
 };
 

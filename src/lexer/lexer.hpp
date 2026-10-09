@@ -5,6 +5,7 @@
 #include <utility>
 #include <memory>
 #include <vector>
+#include <map>
 #include "token.hpp"
 #include "../core/position.hpp"
 
@@ -21,12 +22,14 @@ const std::vector<std::pair<std::string, TokenKind>> ReservedSymbols = {
     {"(", TokenKind::OPEN_PAR},
     {")", TokenKind::CLOSE_PAR},
     {"{", TokenKind::OPEN_BRACE},
-    {"}", TokenKind::CLOSE_BRACE}
+    {"}", TokenKind::CLOSE_BRACE},
+    {"[", TokenKind::OPEN_BRACKET},
+    {"]", TokenKind::CLOSE_BRACKET},
+    {"=", TokenKind::ASSIGN},
 };
 
-struct LexingError {
-    Position pos;
-    std::string message;
+const std::map<std::string, TokenKind> ReservedIdentifiers = {
+    {"var", TokenKind::VAR},
 };
 
 std::unique_ptr<std::vector<Token>> lex(const std::string& source);

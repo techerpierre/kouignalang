@@ -11,6 +11,11 @@ public:
     virtual ~Visitor(void) = default;
     virtual void VisitIntLiteral(const IntLiteral& node) {}
     virtual void VisitFloatLiteral(const FloatLiteral& node) {}
+    virtual void VisitIdentifierLiteral(const IdentifierLiteral& node) {}
+    virtual void VisitSimpleType(const SimpleType& node) {}
+    virtual void VisitArrayType(const ArrayType& node) {
+        Dispatch(*node.elementType);
+    }
     virtual void VisitBinaryExpresion(const BinaryExpresion& node) {
         Dispatch(*node.left);
         Dispatch(*node.right);
@@ -29,6 +34,11 @@ public:
     virtual void VisitBlockStatement(const BlockStatement& node) {
         for (const auto& stmt : node.body) {
             Dispatch(*stmt);
+        }
+    }
+    virtual void VisitVariableDeclarationStatement(const VariableDeclarationStatement& node) {
+        if (node.defaultValue != nullptr) {
+            Dispatch(*node.defaultValue);
         }
     }
     void Dispatch(const Node& node);
