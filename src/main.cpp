@@ -1,3 +1,4 @@
+#include <iostream>
 #include "utils/args.hpp"
 #include "commands/commands.hpp"
 
@@ -9,7 +10,7 @@ int main(int argc, char* argv[]) {
         return 0;
     }
 
-    cmd::console(*args);
+    std::cerr << "You should specify the --input parameter." << std::endl;
 
     return 0;
 }

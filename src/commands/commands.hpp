@@ -6,7 +6,6 @@
 namespace cmd {
 
 int transpile(const arg::Args& args);
-int console(const arg::Args& args);
 
 }
 

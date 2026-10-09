@@ -5,7 +5,6 @@ SOURCE = src/*.cpp \
 	src/lexer/*.cpp \
 	src/ast/*.cpp \
 	src/parser/*.cpp \
-	src/interpreter/*.cpp \
 	src/sema/*.cpp \
 	src/transpiler/*.cpp \
 	src/commands/*.cpp \
@@ -18,8 +17,8 @@ OUT_DEV_FILE = $(BUILD_DIR)/output.cpp
 	build
 	create-in
 	run
-	run-in
-	run-inout
+	run-out
+	run-ast
 
 build:
 	mkdir -p .dist
@@ -29,12 +28,9 @@ create-in:
 	touch $(IN_DEV_FILE)
 
 run:
-	./$(TARGET)
-
-run-in:
 	./$(TARGET) -i $(IN_DEV_FILE)
 
-run-inout:
+run-out:
 	./$(TARGET) -i $(IN_DEV_FILE) -o $(OUT_DEV_FILE)
 
 run-ast:
