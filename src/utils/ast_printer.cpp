@@ -87,7 +87,7 @@ void AstPrinter::VisitArrayType(const ArrayType& node) {
     std::cout << "[]";
 }
 
-void AstPrinter::VisitBinaryExpresion(const BinaryExpresion& node) {
+void AstPrinter::VisitBinaryExpression(const BinaryExpresion& node) {
     std::cout << tabs(m_Depth) << expression("BinaryExpresion") << brace(m_Depth);
     m_Depth++;
     Dispatch(*node.left);

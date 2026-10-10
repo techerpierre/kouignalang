@@ -80,7 +80,7 @@ void SemanticAnalyser::VisitIdentifierLiteral(const IdentifierLiteral& node) {
     }
 }
 
-void SemanticAnalyser::VisitBinaryExpresion(const BinaryExpresion& node) {
+void SemanticAnalyser::VisitBinaryExpression(const BinaryExpresion& node) {
     Dispatch(*node.left);
     auto leftType = m_CurrentExpressionType;
 

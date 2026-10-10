@@ -17,7 +17,7 @@ public:
     virtual void VisitArrayType(const ArrayType& node) {
         Dispatch(*node.elementType);
     }
-    virtual void VisitBinaryExpresion(const BinaryExpresion& node) {
+    virtual void VisitBinaryExpression(const BinaryExpresion& node) {
         Dispatch(*node.left);
         Dispatch(*node.right);
     }

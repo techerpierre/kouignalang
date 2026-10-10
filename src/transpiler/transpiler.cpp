@@ -44,7 +44,7 @@ void Transpiler::VisitArrayType(const ArrayType& node) {
     *m_Output += ">";
 }
 
-void Transpiler::VisitBinaryExpresion(const BinaryExpresion& node) {
+void Transpiler::VisitBinaryExpression(const BinaryExpresion& node) {
     if (node.op == BinaryExpOperator::POW) {
         m_Includes.insert("cmath");
         *m_Output += "pow(";

@@ -38,7 +38,7 @@ public:
     void VisitFloatLiteral(const FloatLiteral& node) override;
     void VisitBooleanLiteral(const BooleanLiteral& node) override;
     void VisitIdentifierLiteral(const IdentifierLiteral& node) override;
-    void VisitBinaryExpresion(const BinaryExpresion& node) override;
+    void VisitBinaryExpression(const BinaryExpresion& node) override;
     void VisitUnaryExpression(const UnaryExpression& node) override;
     void VisitBlockStatement(const BlockStatement& node) override;
     void VisitVariableDeclarationStatement(const VariableDeclarationStatement& node) override;

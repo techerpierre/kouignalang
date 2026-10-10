@@ -37,7 +37,7 @@ void Visitor::Dispatch(const Node& node) {
     }
     case NodeKind::BINARY_EXPRESSION: {
         const auto& binaryExpr = static_cast<const BinaryExpresion&>(node);
-        VisitBinaryExpresion(binaryExpr);
+        VisitBinaryExpression(binaryExpr);
         break;
     }
     case NodeKind::UNARY_EXPRESSION: {
