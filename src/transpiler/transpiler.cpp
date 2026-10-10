@@ -50,9 +50,11 @@ void Transpiler::VisitBinaryExpresion(const BinaryExpresion& node) {
         return;
     }
 
+    *m_Output += "(";
     Dispatch(*node.left);
     *m_Output += " " + BinaryOperatorsToStringMap.find(node.op)->second + " ";
     Dispatch(*node.right);
+    *m_Output += ")";
 }
 
 void Transpiler::VisitUnaryExpression(const UnaryExpression& node) {
