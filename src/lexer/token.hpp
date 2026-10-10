@@ -23,6 +23,8 @@ enum class TokenKind {
     ASSIGN, // =
     ID, // x, y, myVariable ...
     VAR, // var
+    TRUE, // false
+    FALSE, // true
     END_OF_FILE // EOF
 };
 

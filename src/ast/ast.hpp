@@ -11,6 +11,7 @@ namespace ast {
 enum class NodeKind {
     INT_LITERAL,
     FLOAT_LITERAL,
+    BOOLEAN_LITERAL,
     IDENTIFIER_LITERAL,
 
     SIMPLE_TYPE,
@@ -66,6 +67,12 @@ class FloatLiteral : public Expression {
 public:
     double value;
     FloatLiteral() : Expression(NodeKind::FLOAT_LITERAL) {}
+};
+
+class BooleanLiteral : public Expression {
+public:
+    bool value;
+    BooleanLiteral() : Expression(NodeKind::BOOLEAN_LITERAL) {}
 };
 
 class IdentifierLiteral : public Expression {

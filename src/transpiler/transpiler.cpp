@@ -24,6 +24,11 @@ void Transpiler::VisitFloatLiteral(const FloatLiteral& node) {
     *m_Output += std::to_string(node.value);
 }
 
+void Transpiler::VisitBooleanLiteral(const BooleanLiteral& node) {
+    *m_Output += node.value ? "true" : "false";
+}
+
+
 void Transpiler::VisitIdentifierLiteral(const IdentifierLiteral& node) {
     *m_Output += node.name;
 }

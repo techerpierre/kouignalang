@@ -24,6 +24,24 @@ bool isTypesEquals(const Type* t1, const Type* t2) {
     return false;
 }
 
+void ensureIsLegalBinaryOperator(const Type* t, const BinaryExpOperator op, const Position& pos) {
+    if (t->kind == NodeKind::SIMPLE_TYPE) {
+        auto tp = static_cast<const SimpleType*>(t);
+        if (tp->name == "bool" && IllegalBinaryBooleanOperators.find(op) != IllegalBinaryBooleanOperators.end()) {
+            throw error::SemanticError("Unexpected operator for boolean value.", pos);
+        }
+    }
+}
+
+void ensureIsLegalUnaryOperator(const Type* t, const UnaryExpOperator op, const Position& pos) {
+    if (t->kind == NodeKind::SIMPLE_TYPE) {
+        auto tp = static_cast<const SimpleType*>(t);
+        if (tp->name == "bool" && IllegalUnaryBooleanOperators.find(op) != IllegalUnaryBooleanOperators.end()) {
+            throw error::SemanticError("A boolean value cannot be signed.", pos);
+        }
+    }
+}
+
 }
 
 SemanticAnalyser::SemanticAnalyser(void) {
@@ -34,6 +52,9 @@ SemanticAnalyser::SemanticAnalyser(void) {
 
     m_FloatType = std::make_unique<SimpleType>();
     m_FloatType->name = "float";
+
+    m_BooleanType = std::make_unique<SimpleType>();
+    m_BooleanType->name = "bool";
 }
 
 void SemanticAnalyser::VisitIntLiteral(const IntLiteral& node) {
@@ -42,6 +63,10 @@ void SemanticAnalyser::VisitIntLiteral(const IntLiteral& node) {
 
 void SemanticAnalyser::VisitFloatLiteral(const FloatLiteral& node) {
     m_CurrentExpressionType = m_FloatType.get();
+}
+
+void SemanticAnalyser::VisitBooleanLiteral(const BooleanLiteral& node) {
+    m_CurrentExpressionType = m_BooleanType.get();
 }
 
 void SemanticAnalyser::VisitIdentifierLiteral(const IdentifierLiteral& node) {
@@ -62,11 +87,19 @@ void SemanticAnalyser::VisitBinaryExpresion(const BinaryExpresion& node) {
     Dispatch(*node.right);
     auto rightType = m_CurrentExpressionType;
 
+    ensureIsLegalBinaryOperator(leftType, node.op, node.left->position);
+    ensureIsLegalBinaryOperator(rightType, node.op, node.right->position);
+
     if (!isTypesEquals(leftType, rightType)) {
         throw error::SemanticError("Cannot operate in incompatible types.", node.position);
     }
 
     m_CurrentExpressionType = leftType;
+}
+
+void SemanticAnalyser::VisitUnaryExpression(const UnaryExpression& node) {
+    Dispatch(*node.right);
+    ensureIsLegalUnaryOperator(m_CurrentExpressionType, node.op, node.right->position);
 }
 
 void SemanticAnalyser::VisitBlockStatement(const BlockStatement& node) {

@@ -146,6 +146,13 @@ namespace {
             return expr;
         }
 
+        if (ctx.Eat({TokenKind::TRUE, TokenKind::FALSE})) {
+            auto expr = std::make_unique<BooleanLiteral>();
+            expr->value = token.kind == TokenKind::TRUE ? true : false;
+            expr->position = token.pos;
+            return expr;
+        }
+
         if (ctx.Eat({TokenKind::ID})) {
             auto expr = std::make_unique<IdentifierLiteral>();
             expr->name = token.text;

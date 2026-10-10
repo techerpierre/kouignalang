@@ -15,6 +15,11 @@ void Visitor::Dispatch(const Node& node) {
         VisitFloatLiteral(floatLit);
         break;
     }
+    case NodeKind::BOOLEAN_LITERAL: {
+        const auto& boolLit = static_cast<const BooleanLiteral&>(node);
+        VisitBooleanLiteral(boolLit);
+        break;
+    }
     case NodeKind::IDENTIFIER_LITERAL: {
         const auto& idLit = static_cast<const IdentifierLiteral&>(node);
         VisitIdentifierLiteral(idLit);

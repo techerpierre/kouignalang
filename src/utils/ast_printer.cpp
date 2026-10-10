@@ -69,6 +69,11 @@ void AstPrinter::VisitFloatLiteral(const FloatLiteral& node) {
     std::cout << tabs(m_Depth) << expression("FloatLiteral") << parenthesis(m_Depth) << node.value << parenthesis(m_Depth, 1) << "\n";
 }
 
+void AstPrinter::VisitBooleanLiteral(const BooleanLiteral& node) {
+    std::cout << tabs(m_Depth) << expression("BooleanLiteral") << parenthesis(m_Depth) << (node.value ? "true" : "false") << parenthesis(m_Depth, 1) << "\n";
+}
+
+
 void AstPrinter::VisitIdentifierLiteral(const IdentifierLiteral& node) {
     std::cout << tabs(m_Depth) << expression("IdentifierLiteral") << parenthesis(m_Depth) << node.name << parenthesis(m_Depth, 1) << "\n";
 }

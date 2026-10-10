@@ -30,6 +30,8 @@ const std::vector<std::pair<std::string, TokenKind>> ReservedSymbols = {
 
 const std::map<std::string, TokenKind> ReservedIdentifiers = {
     {"var", TokenKind::VAR},
+    {"true", TokenKind::TRUE},
+    {"false", TokenKind::FALSE},
 };
 
 std::unique_ptr<std::vector<Token>> lex(const std::string& source);

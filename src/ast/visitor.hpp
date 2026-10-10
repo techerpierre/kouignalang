@@ -11,6 +11,7 @@ public:
     virtual ~Visitor(void) = default;
     virtual void VisitIntLiteral(const IntLiteral& node) {}
     virtual void VisitFloatLiteral(const FloatLiteral& node) {}
+    virtual void VisitBooleanLiteral(const BooleanLiteral& node) {}
     virtual void VisitIdentifierLiteral(const IdentifierLiteral& node) {}
     virtual void VisitSimpleType(const SimpleType& node) {}
     virtual void VisitArrayType(const ArrayType& node) {
