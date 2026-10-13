@@ -25,6 +25,11 @@ void Visitor::Dispatch(const Node& node) {
         VisitIdentifierLiteral(idLit);
         break;
     }
+    case NodeKind::ARRAY_LITERAL: {
+        const auto& arrLit = static_cast<const ArrayLiteral&>(node);
+        VisitArrayLiteral(arrLit);
+        break;
+    }
     case NodeKind::SIMPLE_TYPE: {
         const auto& simType = static_cast<const SimpleType&>(node);
         VisitSimpleType(simType);

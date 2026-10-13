@@ -31,6 +31,10 @@ void ensureIsLegalBinaryOperator(const Type* t, const BinaryExpOperator op, cons
             throw error::SemanticError("Unexpected operator for boolean value.", pos);
         }
     }
+
+    if (t->kind == NodeKind::ARRAY_TYPE) {
+        throw error::SemanticError("Cannot operate in array.", pos);
+    }
 }
 
 void ensureIsLegalUnaryOperator(const Type* t, const UnaryExpOperator op, const Position& pos) {
@@ -42,31 +46,52 @@ void ensureIsLegalUnaryOperator(const Type* t, const UnaryExpOperator op, const 
     }
 }
 
+std::unique_ptr<Type> cloneType(const Type* t) {
+    if (t == nullptr) {
+        return nullptr;
+    }
+
+    if (t->kind == NodeKind::SIMPLE_TYPE) {
+        auto tp = static_cast<const SimpleType*>(t);
+        auto copy = std::make_unique<SimpleType>();
+        copy->name = tp->name;
+        copy->position = tp->position;
+        return copy;
+    }
+
+    if (t->kind == NodeKind::ARRAY_TYPE) {
+        auto tp = static_cast<const ArrayType*>(t);
+        auto copy = std::make_unique<ArrayType>();
+        copy->elementType = cloneType(tp->elementType.get());
+        copy->position = tp->position;
+        return copy;
+    }
+
+    return nullptr;
+}
+
 }
 
 SemanticAnalyser::SemanticAnalyser(void) {
     m_CurrentScope = std::make_shared<Scope>();
-
-    m_IntType = std::make_unique<SimpleType>();
-    m_IntType->name = "int";
-
-    m_FloatType = std::make_unique<SimpleType>();
-    m_FloatType->name = "float";
-
-    m_BooleanType = std::make_unique<SimpleType>();
-    m_BooleanType->name = "bool";
 }
 
 void SemanticAnalyser::VisitIntLiteral(const IntLiteral& node) {
-    m_CurrentExpressionType = m_IntType.get();
+    auto intType = std::make_unique<SimpleType>();
+    intType->name = "int";
+    m_CurrentExpressionType = std::move(intType);
 }
 
 void SemanticAnalyser::VisitFloatLiteral(const FloatLiteral& node) {
-    m_CurrentExpressionType = m_FloatType.get();
+    auto floatType = std::make_unique<SimpleType>();
+    floatType->name = "float";
+    m_CurrentExpressionType = std::move(floatType);
 }
 
 void SemanticAnalyser::VisitBooleanLiteral(const BooleanLiteral& node) {
-    m_CurrentExpressionType = m_BooleanType.get();
+    auto boolType = std::make_unique<SimpleType>();
+    boolType->name = "bool";
+    m_CurrentExpressionType = std::move(boolType);
 }
 
 void SemanticAnalyser::VisitIdentifierLiteral(const IdentifierLiteral& node) {
@@ -74,32 +99,53 @@ void SemanticAnalyser::VisitIdentifierLiteral(const IdentifierLiteral& node) {
 
     if (symbol.statement->kind == NodeKind::VARIABLE_DECLARATION_STATEMENT) {
         auto var = static_cast<const VariableDeclarationStatement*>(symbol.statement);
-        m_CurrentExpressionType = var->type.get();
+        m_CurrentExpressionType = cloneType(var->type.get());
     } else {
         m_CurrentExpressionType = nullptr;
     }
 }
 
+void SemanticAnalyser::VisitArrayLiteral(const ArrayLiteral &node) {
+    if (node.elements.empty()) {
+        m_CurrentExpressionType = nullptr;
+        return;
+    }
+
+    Dispatch(*node.elements[0]);
+    auto firstElementType = std::move(m_CurrentExpressionType);
+
+    for (size_t i = 1; i < node.elements.size(); ++i) {
+        Dispatch(*node.elements[i]);
+        if (!isTypesEquals(firstElementType.get(), m_CurrentExpressionType.get())) {
+            throw error::SemanticError("Incompatible types between array elements.", node.elements[i]->position);
+        }
+    }
+
+    auto arrayType = std::make_unique<ArrayType>();
+    arrayType->elementType = std::move(firstElementType);
+    m_CurrentExpressionType = std::move(arrayType);
+}
+
 void SemanticAnalyser::VisitBinaryExpression(const BinaryExpresion& node) {
     Dispatch(*node.left);
-    auto leftType = m_CurrentExpressionType;
+    auto leftType = std::move(m_CurrentExpressionType);
 
     Dispatch(*node.right);
-    auto rightType = m_CurrentExpressionType;
+    auto rightType = std::move(m_CurrentExpressionType);
 
-    ensureIsLegalBinaryOperator(leftType, node.op, node.left->position);
-    ensureIsLegalBinaryOperator(rightType, node.op, node.right->position);
+    ensureIsLegalBinaryOperator(leftType.get(), node.op, node.left->position);
+    ensureIsLegalBinaryOperator(rightType.get(), node.op, node.right->position);
 
-    if (!isTypesEquals(leftType, rightType)) {
+    if (!isTypesEquals(leftType.get(), rightType.get())) {
         throw error::SemanticError("Cannot operate in incompatible types.", node.position);
     }
 
-    m_CurrentExpressionType = leftType;
+    m_CurrentExpressionType = std::move(leftType);
 }
 
 void SemanticAnalyser::VisitUnaryExpression(const UnaryExpression& node) {
     Dispatch(*node.right);
-    ensureIsLegalUnaryOperator(m_CurrentExpressionType, node.op, node.right->position);
+    ensureIsLegalUnaryOperator(m_CurrentExpressionType.get(), node.op, node.right->position);
 }
 
 void SemanticAnalyser::VisitBlockStatement(const BlockStatement& node) {
@@ -114,7 +160,7 @@ void SemanticAnalyser::VisitVariableDeclarationStatement(const VariableDeclarati
     if (node.defaultValue != nullptr) {
         Dispatch(*node.defaultValue);
 
-        if (!isTypesEquals(node.type.get(), m_CurrentExpressionType)) {
+        if (!isTypesEquals(node.type.get(), m_CurrentExpressionType.get())) {
             throw error::SemanticError("Invalid expression type in variable declaration.", node.position);
         }
     }

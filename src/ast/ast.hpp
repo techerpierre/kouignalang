@@ -13,6 +13,7 @@ enum class NodeKind {
     FLOAT_LITERAL,
     BOOLEAN_LITERAL,
     IDENTIFIER_LITERAL,
+    ARRAY_LITERAL,
 
     SIMPLE_TYPE,
     ARRAY_TYPE,
@@ -79,6 +80,12 @@ class IdentifierLiteral : public Expression {
 public:
     std::string name;
     IdentifierLiteral() : Expression(NodeKind::IDENTIFIER_LITERAL) {}
+};
+
+class ArrayLiteral : public Expression {
+public:
+    std::vector<std::unique_ptr<Expression>> elements;
+    ArrayLiteral() : Expression(NodeKind::ARRAY_LITERAL) {}
 };
 
 class SimpleType : public Type {

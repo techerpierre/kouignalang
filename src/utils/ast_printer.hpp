@@ -52,6 +52,7 @@ public:
     void VisitFloatLiteral(const FloatLiteral& node) override;
     void VisitBooleanLiteral(const BooleanLiteral& node) override;
     void VisitIdentifierLiteral(const IdentifierLiteral& node) override;
+    void VisitArrayLiteral(const ArrayLiteral& node) override;
 
     void VisitSimpleType(const SimpleType& node) override;
     void VisitArrayType(const ArrayType& node) override;

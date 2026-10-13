@@ -26,11 +26,7 @@ const std::set<UnaryExpOperator> IllegalUnaryBooleanOperators = {
 class SemanticAnalyser : public Visitor {
 private:
     std::shared_ptr<Scope> m_CurrentScope;
-    Type* m_CurrentExpressionType = nullptr;
-
-    std::unique_ptr<SimpleType> m_IntType;
-    std::unique_ptr<SimpleType> m_FloatType;
-    std::unique_ptr<SimpleType> m_BooleanType;
+    std::unique_ptr<Type> m_CurrentExpressionType;
 public:
     SemanticAnalyser(void);
 
@@ -38,6 +34,7 @@ public:
     void VisitFloatLiteral(const FloatLiteral& node) override;
     void VisitBooleanLiteral(const BooleanLiteral& node) override;
     void VisitIdentifierLiteral(const IdentifierLiteral& node) override;
+    void VisitArrayLiteral(const ArrayLiteral &node) override;
     void VisitBinaryExpression(const BinaryExpresion& node) override;
     void VisitUnaryExpression(const UnaryExpression& node) override;
     void VisitBlockStatement(const BlockStatement& node) override;

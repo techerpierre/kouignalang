@@ -28,10 +28,21 @@ void Transpiler::VisitBooleanLiteral(const BooleanLiteral& node) {
     *m_Output += node.value ? "true" : "false";
 }
 
-
 void Transpiler::VisitIdentifierLiteral(const IdentifierLiteral& node) {
     *m_Output += node.name;
 }
+
+void Transpiler::VisitArrayLiteral(const ArrayLiteral& node) {
+    *m_Output += "{";
+    for (size_t i = 0; i < node.elements.size(); i++) {
+        if (i > 0) {
+            *m_Output += ", ";
+        }
+        Dispatch(*node.elements[i]);
+    }
+    *m_Output += "}";
+}
+
 
 void Transpiler::VisitSimpleType(const SimpleType& node) {
     *m_Output += node.name;

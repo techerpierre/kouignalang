@@ -13,6 +13,11 @@ public:
     virtual void VisitFloatLiteral(const FloatLiteral& node) {}
     virtual void VisitBooleanLiteral(const BooleanLiteral& node) {}
     virtual void VisitIdentifierLiteral(const IdentifierLiteral& node) {}
+    virtual void VisitArrayLiteral(const ArrayLiteral& node) {
+        for (const auto& expr : node.elements) {
+            Dispatch(*expr);
+        }
+    }
     virtual void VisitSimpleType(const SimpleType& node) {}
     virtual void VisitArrayType(const ArrayType& node) {
         Dispatch(*node.elementType);

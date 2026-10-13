@@ -13,6 +13,7 @@ enum class TokenKind {
     SUB, // -
     MUL, // *
     POW, // **
+    COMMA, // ,
     TRUE_DIV, // /
     OPEN_PAR, // (
     CLOSE_PAR, // )

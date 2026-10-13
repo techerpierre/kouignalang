@@ -26,6 +26,7 @@ const std::vector<std::pair<std::string, TokenKind>> ReservedSymbols = {
     {"[", TokenKind::OPEN_BRACKET},
     {"]", TokenKind::CLOSE_BRACKET},
     {"=", TokenKind::ASSIGN},
+    {",", TokenKind::COMMA},
 };
 
 const std::map<std::string, TokenKind> ReservedIdentifiers = {

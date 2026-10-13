@@ -73,9 +73,18 @@ void AstPrinter::VisitBooleanLiteral(const BooleanLiteral& node) {
     std::cout << tabs(m_Depth) << expression("BooleanLiteral") << parenthesis(m_Depth) << (node.value ? "true" : "false") << parenthesis(m_Depth, 1) << "\n";
 }
 
-
 void AstPrinter::VisitIdentifierLiteral(const IdentifierLiteral& node) {
     std::cout << tabs(m_Depth) << expression("IdentifierLiteral") << parenthesis(m_Depth) << node.name << parenthesis(m_Depth, 1) << "\n";
+}
+
+void AstPrinter::VisitArrayLiteral(const ArrayLiteral& node) {
+    std::cout << tabs(m_Depth) << statement("ArrayLiteral") << brace(m_Depth);
+    m_Depth++;
+    for (const auto& expr : node.elements) {
+        Dispatch(*expr);
+    }
+    m_Depth--;
+    std::cout << tabs(m_Depth) << brace(m_Depth, 1);
 }
 
 void AstPrinter::VisitSimpleType(const SimpleType& node) {

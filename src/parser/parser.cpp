@@ -14,6 +14,7 @@ namespace {
     std::unique_ptr<Expression> parsePowerExpression(ParsingContext& ctx);
     std::unique_ptr<Expression> parseUnaryExpression(ParsingContext& ctx);
     std::unique_ptr<Expression> parseLiteralExpression(ParsingContext& ctx);
+    std::unique_ptr<Expression> parseArrayLiteral(ParsingContext& ctx);
     std::unique_ptr<Type> parseType(ParsingContext& ctx);
 
     std::unique_ptr<Statement> parseStatement(ParsingContext& ctx) {
@@ -160,6 +161,10 @@ namespace {
             return expr;
         }
 
+        if (ctx.Eat({TokenKind::OPEN_BRACKET})) {
+            return parseArrayLiteral(ctx);
+        }
+
         if (ctx.Eat({TokenKind::OPEN_PAR})) {
             auto expr = parseExpression(ctx);
             auto closePar = ctx.EatOrFail({TokenKind::CLOSE_PAR}, ") is expected to close parenthesis.");
@@ -167,6 +172,22 @@ namespace {
         }
 
         throw error::ParsingError(std::string("Unexpected token: ") + token.text, token.pos);
+    }
+
+    std::unique_ptr<Expression> parseArrayLiteral(ParsingContext& ctx) {
+        auto arrayLit = std::make_unique<ArrayLiteral>();
+        arrayLit->position = ctx.Previous().pos;
+
+        do {
+            if (ctx.Eat({TokenKind::CLOSE_BRACKET})) {
+                break;
+            }
+            arrayLit->elements.push_back(parseExpression(ctx));
+        } while (ctx.Eat({TokenKind::COMMA}));
+
+        ctx.EatOrFail({TokenKind::CLOSE_BRACKET}, "] is expected to close array literal.");
+
+        return arrayLit;
     }
 
     std::unique_ptr<Type> parseType(ParsingContext& ctx) {
